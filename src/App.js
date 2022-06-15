@@ -23,7 +23,6 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [displayScreen, setDisplayScreen] = useState(0)
   const [showModal, setShowModal] = useState(false);
-  const [activeMarker, setActiveMarker] = useState(null);
   const [sortRatings, setSortRatings] = useState(null);
   const [ selected, setSelected ] = useState({});
   const [ currentPosition, setCurrentPosition ] = useState(null);
@@ -39,17 +38,6 @@ function App() {
     googleMapsApiKey: "AIzaSyDue_S6t9ybh_NqaeOJDkr1KC9a2ycUYuE",
     libraries
   })
-
-  const onMarkerSelection = (place, map) => {
-    updateSelected(place);
-    console.log('selected this place on marker click', place)
-    // const infoWindow = new window.google.maps.InfoWindow();
-    // infoWindow.setContent(place.name);
-    // infoWindow.open(map, this);
-
-    // infoWindow.setContent(marker.getTitle());
-    // infoWindow.open(marker.getMap(), marker);
-  }
 
   const mapStyles = {        
     height: '526px',
@@ -94,12 +82,18 @@ function App() {
   useEffect(() => {
     // initialize map, service, infoWindow
     if (mapRef.current && !map) {
-      const m = new window.google.maps.Map(mapRef.current, {});
-      setMap(m);
-      if(!service) setService(new window.google.maps.places.PlacesService(m));
-      if(!infoWindow) setInfoWindow(new window.google.maps.InfoWindow());
+      setMap(new window.google.maps.Map(mapRef.current, {}));
     }
   }, [mapRef, map]);
+
+  useEffect(() => {
+    // initialize service, infoWindow
+    if (map) {
+      console.log('initialize infowindow')
+      if(!service) setService(new window.google.maps.places.PlacesService(map));
+      if(!infoWindow) setInfoWindow(new window.google.maps.InfoWindow());
+    }
+  }, [map]);
 
   useEffect(() => {
     if(currentPosition && service) {
@@ -148,7 +142,6 @@ function App() {
 
   const resetSelected = () => {
     setSelected({});
-    setActiveMarker(null);
   }
 
   const onSortRating = (event) => {
@@ -219,9 +212,7 @@ function App() {
                               onChange={(e) => onSearch(e.target.value)}
                             />
                             <IoSearchSharp size="16px" color="#428815" />
-
                         </InputGroup>
-     
             </div> 
         </Col>
       </Row>
@@ -256,14 +247,8 @@ function App() {
                             lat: item.geometry.location.lat(),
                             lng: item.geometry.location.lng()
                           }}
-                          // onClick={(props, marker) => {
-                          //   console.log('item on click', )
-                          //   setSelected(item)
-                          //   setActiveMarker(marker);
-                          // }}
                           onMouseOver={() => {
                             setSelected(item);
-                            // setActiveMarker(marker);
                           }}
                           // onMouseOut={resetSelected}
                           clickable={true}
@@ -280,7 +265,6 @@ function App() {
                             lat: selected.geometry.location.lat(),
                             lng: selected.geometry.location.lng()
                           }}
-                          marker={activeMarker}
                           onCloseClick={resetSelected}
                         >
                           <ListItem item={selected}></ListItem>

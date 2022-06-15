@@ -19,7 +19,7 @@ X-The web app should display the search results as pins on a map
 X1. It'd be best to use the users current location for the initial load of the page and return a basic list of restaurants based on their longitude and latitude.
 2. yes the restaurants should link to google's details page of the restaurant. 
 X3. Yes - when a user hovers over a card on the left pane, the card on the map should appear on the map at the correct location.
-4. Hovering on the pins on the map should show the map card on the map  - infowindow?
+X4. Hovering on the pins on the map should show the map card on the map  - infowindow?
 X5. Debouncing on text search is best practice, I'd advise that it is added. 
 X6. If you can just grab the logo off the website that would be great. 
 */
