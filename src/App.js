@@ -128,8 +128,9 @@ function App() {
   }, [searchTerm])
 
   // ability to change screens on mobile only
-  const onChangeScreen = (screenNumber) => {
-    setDisplayScreen(screenNumber);
+  const onToggleScreen = () => {
+    const newScreen = displayScreen === 0 ? 1 : 0;
+    setDisplayScreen(newScreen);
   }
 
   const updateSelected = (restaurant) => {
@@ -217,10 +218,9 @@ function App() {
         </Col>
       </Row>
       <Row>
-        {/* TODO: Map Button and List button on mobile */}
         <Col xs={12} lg={4} className="px-0">
           <RestaurantList
-            className={(displayScreen === 1) && 'd-xs-none'}
+            className={(displayScreen === 1) && 'mobile-hide'}
             locations={locations}
             onItemHoverIn={updateSelected}
             onItemHoverOut={resetSelected}
@@ -230,9 +230,8 @@ function App() {
         </Col>
         <Col xs={12} lg={8} className="px-0">
           {isLoaded && 
-            <div className='map-container'>
+            <div className={`map-container ${(displayScreen === 0) && 'mobile-hide'}`}>
               <GoogleMap
-                className={(displayScreen === 0) && 'd-xs-none'}
                 mapContainerStyle={mapStyles}
                 zoom={13}
                 center={mapCenter || currentPosition}
@@ -276,8 +275,9 @@ function App() {
           } 
           </Col>
       </Row>
-      <Button className="d-sm-none" onClick={() => onChangeScreen(1)}>Map</Button>
-      <Button className="d-sm-none"onClick={() => onChangeScreen(0)}>List</Button>
+      {displayScreen === 0 ? (<Button className="mobile-button d-sm-none" onClick={() => onToggleScreen()}>Map</Button>) : (<Button className="mobile-button d-sm-none "onClick={() => onToggleScreen()}>List</Button>)}
+      
+      
     </Container>
  
   );

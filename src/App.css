@@ -64,3 +64,24 @@ body {
   font-size: 12px;
   line-height: 1;
 }
+
+.mobile-button {
+  position: fixed;
+  bottom: 20px;
+}
+
+@media screen and (max-width: 576px) {
+  .mobile-hide {
+    /* display: none; */
+    visibility: hidden
+  }
+}
+
+.btn-primary {
+  background-color: #428815;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #30660d;
+}
