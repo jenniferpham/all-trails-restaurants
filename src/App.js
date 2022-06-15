@@ -8,6 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form'
 import './App.css';
 import { RestaurantList } from './components/restaurant-list/restaurant-list.component';
+import { ListItem } from './components/list-item/list-item.component';
 import Map from './components/map/map.component'
 import logo from './assets/logo.svg';
 
@@ -22,6 +23,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [displayScreen, setDisplayScreen] = useState(0)
   const [showModal, setShowModal] = useState(false);
+  const [activeMarker, setActiveMarker] = useState(null);
   const [sortRatings, setSortRatings] = useState(null);
   const [ selected, setSelected ] = useState({});
   const [ currentPosition, setCurrentPosition ] = useState(null);
@@ -38,12 +40,12 @@ function App() {
     libraries
   })
 
-  const onMarkerClick = (place, map) => {
-    setSelected(place);
-    console.log('selected', place)
-    const infoWindow = new window.google.maps.InfoWindow();
-    infoWindow.setContent(place.name);
-    infoWindow.open(map, this);
+  const onMarkerSelection = (place, map) => {
+    updateSelected(place);
+    console.log('selected this place on marker click', place)
+    // const infoWindow = new window.google.maps.InfoWindow();
+    // infoWindow.setContent(place.name);
+    // infoWindow.open(map, this);
 
     // infoWindow.setContent(marker.getTitle());
     // infoWindow.open(marker.getMap(), marker);
@@ -136,6 +138,19 @@ function App() {
     setDisplayScreen(screenNumber);
   }
 
+  const updateSelected = (restaurant) => {
+    console.log('update selected restaurant', restaurant);
+    setSelected(restaurant);
+    if(restaurant) {
+      setMapCenter(restaurant.geometry.location);
+    }
+  }
+
+  const resetSelected = () => {
+    setSelected({});
+    setActiveMarker(null);
+  }
+
   const onSortRating = (event) => {
     event.preventDefault();
     const form = event;
@@ -154,7 +169,6 @@ function App() {
     })
     toggleModal();
   }
-  
   return (
     <Container className="app-container">
       <Row className="search-header">
@@ -214,7 +228,14 @@ function App() {
       <Row>
         {/* TODO: Map Button and List button on mobile */}
         <Col xs={12} lg={4} className="px-0">
-          <RestaurantList className={(displayScreen === 1) && 'd-xs-none'} locations={locations}></RestaurantList>
+          <RestaurantList
+            className={(displayScreen === 1) && 'd-xs-none'}
+            locations={locations}
+            onItemHoverIn={updateSelected}
+            onItemHoverOut={resetSelected}
+          >
+
+          </RestaurantList>
         </Col>
         <Col xs={12} lg={8} className="px-0">
           {isLoaded && 
@@ -235,7 +256,13 @@ function App() {
                             lat: item.geometry.location.lat(),
                             lng: item.geometry.location.lng()
                           }}
-                          onClick={() => onMarkerClick(item)}
+                          onClick={(props, marker) => {
+                            console.log('item on click', )
+                            setSelected(item)
+                            setActiveMarker(marker);
+                          }}
+                          onMouseOver={() => setSelected(item)}
+                          onMouseOut={() => resetSelected()}
                           clickable={true}
                           visible={true}
                         />
@@ -243,14 +270,15 @@ function App() {
                     })
                   }
                   {
-                      selected.location && 
+                      selected.geometry && 
                       (
                         <InfoWindow
-                          position={selected.location}
+                          position={selected.geometry.location}
+                          marker={activeMarker}
                           clickable={true}
-                          onCloseClick={() => setSelected({})}
+                          onCloseClick={resetSelected}
                         >
-                          <p>{selected.name}</p>
+                          <ListItem item={selected}></ListItem>
                         </InfoWindow>
                       )
                   }

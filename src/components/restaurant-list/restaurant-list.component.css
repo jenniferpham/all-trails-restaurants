@@ -10,3 +10,15 @@
   height: 526px
 }
 
+.restaurant-list-border {
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  padding: 0;
+  margin-bottom: 10px;
+  overflow: visible;
+  background-color: #fff;
+}
+
+.restaurant-list-border:hover {
+  border: 2px solid #428815;
+}

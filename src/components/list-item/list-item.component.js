@@ -2,13 +2,18 @@ import './list-item.component.css';
 import { useEffect, useState } from 'react';
 import { IoStarOutline, IoStar, IoHeartSharp, IoHeartOutline } from "react-icons/io5";
 import DefaultHikingImage from "../../assets/martis-trail.jpg";
-import axios from 'axios';
 
 
 const heartSize = '22px';
 
-export function ListItem({name, image, numReviews, rating, description, priceLevel}) {
+export function ListItem({item = {}, onHoverIn, onHoverOut, displayFavorite}) {
   const [favorite, setFavorite] = useState(false);
+  const {name, rating, photos, user_ratings_total: numReviews, formatted_address: description, geometry, price_level: priceLevel} = item;
+  const image = photos ? photos[0] : null;
+  const position = {
+    lat: geometry.location.lat(),
+    lng: geometry.location.lng()
+  }
 
   const onHeartToggle = () => {
     setFavorite((prevFavState) => !prevFavState);
@@ -43,7 +48,15 @@ export function ListItem({name, image, numReviews, rating, description, priceLev
   };
 
   return (
-    <div className="restaurant-list-item">
+    <div 
+      className="restaurant-list-item"
+      onMouseEnter={() => {
+        if(onHoverIn) onHoverIn(item)
+      }}
+      onMouseLeave={() => {
+        if(onHoverOut) onHoverOut();
+      }}
+    >
       <div className="image-container">
         <img src={image ? image.getUrl({maxWidth: 65, maxHeight: 65}) : DefaultHikingImage} alt={name} className="restaurant-image" />
       </div>
@@ -56,9 +69,12 @@ export function ListItem({name, image, numReviews, rating, description, priceLev
             <span>{Array(priceLevel).fill('$')}</span> &bull; <span>{description}</span>
           </p>
         </div>  
-        <div className="favorites-container">
-          {FavoriteHeart(favorite)}
-        </div>
+        { displayFavorite && 
+          <div className="favorites-container">
+            {FavoriteHeart(favorite)}
+          </div>
+        }
+      
   </div>
   );
 }
