@@ -219,14 +219,16 @@ function App() {
       </Row>
       <Row>
         <Col xs={12} lg={4} className="px-0">
-          <RestaurantList
-            className={(displayScreen === 1) && 'mobile-hide'}
+          <div  className={(displayScreen === 1) && 'mobile-hide'}>
+            <RestaurantList
+            
             locations={locations}
             onItemHoverIn={updateSelected}
             onItemHoverOut={resetSelected}
           >
 
           </RestaurantList>
+          </div>
         </Col>
         <Col xs={12} lg={8} className="px-0">
           {isLoaded && 
