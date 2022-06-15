@@ -39,6 +39,13 @@ body {
   overflow: hidden;
 }
 
+@media screen and (min-width: 567px) {
+  .content-container {
+    height: auto;
+    overflow: visible;
+  }
+}
+
 .app-logo {
   height: 30px;
   max-height: 100%;
@@ -68,12 +75,13 @@ body {
 .mobile-button {
   position: fixed;
   bottom: 20px;
+  left: calc((100% - 100px)/2);
+  right: calc((100% - 100px)/2);
 }
 
 @media screen and (max-width: 576px) {
   .mobile-hide {
     display: none;
-    /* visibility: hidden */
   }
 }
 
@@ -82,6 +90,11 @@ body {
   border: none;
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
   background-color: #30660d;
+}
+
+.button-icon {
+  margin-right: 3px;
+  color: #fff;
 }

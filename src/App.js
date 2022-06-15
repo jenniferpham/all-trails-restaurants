@@ -2,14 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, InputGroup } from 'react-bootstrap';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
-import { IoSearchSharp } from "react-icons/io5";
+import { IoSearchSharp, IoListOutline, IoLocationOutline } from "react-icons/io5";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form'
 import './App.css';
 import { RestaurantList } from './components/restaurant-list/restaurant-list.component';
 import { ListItem } from './components/list-item/list-item.component';
-import Map from './components/map/map.component'
 import logo from './assets/logo.svg';
 
 
@@ -134,12 +133,27 @@ function App() {
   }
 
   const updateSelected = (restaurant) => {
+    if(infoWindow) {
+      infoWindow.close();
+    }
     console.log('update selected restaurant', restaurant);
     setSelected(restaurant);
     if(restaurant) {
       setMapCenter(restaurant.geometry.location);
     }
+
+    setInfoWindow(new window.google.maps.InfoWindow({
+      position:restaurant.geometry.location,
+      content: restaurant.name
+  }));
   }
+
+  useEffect(() => {
+if(infoWindow && map) {
+  infoWindow.open(mapRef.current);
+
+}
+  }, [infoWindow])
 
   const resetSelected = () => {
     setSelected({});
@@ -219,20 +233,18 @@ function App() {
       </Row>
       <Row>
         <Col xs={12} lg={4} className="px-0">
-          <div  className={(displayScreen === 1) && 'mobile-hide'}>
+          <div  className={(displayScreen === 1) ? 'mobile-hide' : ''}>
             <RestaurantList
-            
-            locations={locations}
-            onItemHoverIn={updateSelected}
-            onItemHoverOut={resetSelected}
-          >
-
+              locations={locations}
+              onItemHoverIn={updateSelected}
+              onItemHoverOut={resetSelected}
+            >
           </RestaurantList>
           </div>
         </Col>
         <Col xs={12} lg={8} className="px-0">
           {isLoaded && 
-            <div className={`map-container ${(displayScreen === 0) && 'mobile-hide'}`}>
+            <div className={`map-container ${(displayScreen === 0) ? 'mobile-hide' : ''}`}>
               <GoogleMap
                 mapContainerStyle={mapStyles}
                 zoom={13}
@@ -277,7 +289,20 @@ function App() {
           } 
           </Col>
       </Row>
-      {displayScreen === 0 ? (<Button className="mobile-button d-sm-none" onClick={() => onToggleScreen()}>Map</Button>) : (<Button className="mobile-button d-sm-none "onClick={() => onToggleScreen()}>List</Button>)}
+      {displayScreen === 0 ? (
+        <Button
+          className="mobile-button d-sm-none" 
+          onClick={() => onToggleScreen()}>
+            <IoListOutline className="button-icon" size="20px"  />
+            Map
+          </Button>
+      ) : (
+        <Button
+          className="mobile-button d-sm-none "
+          onClick={() => onToggleScreen()}>
+          <IoLocationOutline className="button-icon" size="20px" />
+        List</Button>
+      )}
       
       
     </Container>
