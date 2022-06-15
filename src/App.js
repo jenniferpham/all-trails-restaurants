@@ -256,13 +256,16 @@ function App() {
                             lat: item.geometry.location.lat(),
                             lng: item.geometry.location.lng()
                           }}
-                          onClick={(props, marker) => {
-                            console.log('item on click', )
-                            setSelected(item)
-                            setActiveMarker(marker);
+                          // onClick={(props, marker) => {
+                          //   console.log('item on click', )
+                          //   setSelected(item)
+                          //   setActiveMarker(marker);
+                          // }}
+                          onMouseOver={() => {
+                            setSelected(item);
+                            // setActiveMarker(marker);
                           }}
-                          onMouseOver={() => setSelected(item)}
-                          onMouseOut={() => resetSelected()}
+                          // onMouseOut={resetSelected}
                           clickable={true}
                           visible={true}
                         />
@@ -273,9 +276,11 @@ function App() {
                       selected.geometry && 
                       (
                         <InfoWindow
-                          position={selected.geometry.location}
+                          position={{
+                            lat: selected.geometry.location.lat(),
+                            lng: selected.geometry.location.lng()
+                          }}
                           marker={activeMarker}
-                          clickable={true}
                           onCloseClick={resetSelected}
                         >
                           <ListItem item={selected}></ListItem>
