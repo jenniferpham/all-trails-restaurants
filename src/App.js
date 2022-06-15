@@ -16,8 +16,7 @@ import logo from './assets/logo.svg';
 // Google recommends installing this library https://www.npmjs.com/package/@react-google-maps/api for React app
 // Docs: https://react-google-maps-api-docs.netlify.app/ 
 
-const libraries = 'places';
-let service;
+const libraries = ['places'];
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,15 +25,15 @@ function App() {
   const [sortRatings, setSortRatings] = useState(null);
   const [ selected, setSelected ] = useState({});
   const [ currentPosition, setCurrentPosition ] = useState(null);
-  // const [ service, setService ] = useState(null);
+  const [ service, setService ] = useState(null);
   const [ infoWindow, setInfoWindow ] = useState(null);
   const mapRef = useRef(null);
   const [ mapCenter, setMapCenter ] = useState(null);
   const [ map, setMap ] = useState()
   const [ locations, setLocations ] = useState([]);
 
-  const { isLoaded, isError } = useJsApiLoader({
-    id: 'google-map-script',
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-places-script',
     googleMapsApiKey: "AIzaSyDue_S6t9ybh_NqaeOJDkr1KC9a2ycUYuE",
     libraries
   })
@@ -68,22 +67,19 @@ function App() {
     });
   }
 
-  const getRestaurantsByQuery = (currentPosition, map, query) => {
-    console.log('query')
+  const getRestaurantsByQuery = (currentPosition, service, query) => {
     let request = {
       location: currentPosition,
       radius: "2000", // meters
       type: 'restaurant', 
       query
     };
-    if(map && !service) {
-      service = new window.google.maps.places.PlacesService(map);
-    }
     service.textSearch(request, (results, status) => {
        if (status === "OK" && results) {
         setLocations(results);
         console.log('result[0]', results[0])
-        // setMapCenter(results[0].geometry.location);
+        // map is centered at first result
+        setMapCenter(results[0].geometry.location);
       }
     });
 
@@ -94,50 +90,29 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // TODO: did I set map somewhere up there?
-    console.log('mapRef.current', mapRef.current)
-    console.log('map', map)
+    // initialize map, service, infoWindow
     if (mapRef.current && !map) {
-      console.log('setMap')
       const m = new window.google.maps.Map(mapRef.current, {});
       setMap(m);
-      console.log('set map 2')
+      if(!service) setService(new window.google.maps.places.PlacesService(m));
+      if(!infoWindow) setInfoWindow(new window.google.maps.InfoWindow());
     }
   }, [mapRef, map]);
 
   useEffect(() => {
-    console.log('isLoaded', isLoaded)
-    
-  }, [isLoaded])
-
-  // useEffect(() => {
-  //   console.log('map')
-  //   console.log('service', service)
-  //   if(map) {
-  //     console.log('map exists')
-  //     if(!service) {
-  //       console.log('map2')
-  //       // service = new window.google.maps.places.PlacesService(map);
-  //       // setService(new window.google.maps.places.PlacesService(map));
-      
-  //     }
-  //     // if(!infoWindow) setInfoWindow(new window.google.maps.InfoWindow());
-  //   }
-  // }, [map])
+    if(currentPosition && service) {
+      getRestaurantsByQuery(currentPosition, service, '')
+    }
+  }, [currentPosition, service])
 
   useEffect(() => {
-    if(currentPosition && map) {
-      console.log('yes')
-      getRestaurantsByQuery(currentPosition, map, '')
-    }
-  }, [currentPosition, map])
-
-  // useEffect(() => {
-  //   // set map to null on unmount
-  //   return () => {
-  //     setMap(null);
-  //   };
-  // }, [])
+    // set map, service, infoWindow to null on unmount
+    return () => {
+      setMap(null);
+      setService(null);
+      setInfoWindow(null);
+    };
+  }, [])
 
 
   const toggleModal = () => setShowModal(!showModal);
@@ -147,14 +122,14 @@ function App() {
     setSearchTerm(term);
   };
 
-  // useEffect(() => {
-  //   console.log('search', searchTerm)
-  //   const delayDebounceFn = setTimeout(() => {
-  //     getRestaurantsByQuery(currentPosition, service, searchTerm)
-  //   }, 1000)
-
-  //   return () => clearTimeout(delayDebounceFn)
-  // }, [searchTerm])
+  useEffect(() => {
+    if(!service) return;
+    // debounce so query is sent after some time (.6s)
+    const delayDebounceFn = setTimeout(() => {
+      getRestaurantsByQuery(currentPosition, service, searchTerm)
+    }, 600)
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchTerm])
 
   // ability to change screens on mobile only
   const onChangeScreen = (screenNumber) => {

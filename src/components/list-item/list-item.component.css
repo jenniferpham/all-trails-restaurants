@@ -1,6 +1,6 @@
 .restaurant-list-item {
   width: 300px;
-  min-height: 97px;
+  min-height: 100px;
   display: flex;
   flex-direction: row;
   background-color: #fff;
@@ -8,6 +8,7 @@
   border: 1px solid #e5e5e5;
   margin-bottom: 10px;
   padding: 10px;
+  overflow: visible;
 }
 
 .restaurant-list-item:hover {
@@ -28,9 +29,12 @@
 
 .restaurant-image {
   margin-right: 4px;
+  max-width: 65px;
+  max-height: 65px;
 }
 
 .restaurant-title {
+  line-height: 1.1;
   color: #818181;
   font-size: 14px;
   font-weight: bold;

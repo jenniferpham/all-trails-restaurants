@@ -28,8 +28,7 @@ body {
 .search-header {
   background-color: #fff;
   display: flex;
-  min-height: 61px;
-  /* padding: 13px 23px; */
+  padding: 13px 23px;
 }
 
 .content-container {
