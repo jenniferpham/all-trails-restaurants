@@ -10,6 +10,7 @@
 - number of stars correspond to user rating (rounded average rating to nearest 0.5)
 - sort ratings from high to low and from low to high with filter button in header
 - restaurant info links to google details page
+- hide API key in .env file that isn't pushed to Git repo
 
 # Getting Started with Create React App
 

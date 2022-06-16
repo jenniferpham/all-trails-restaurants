@@ -33,10 +33,9 @@ function App() {
   const [ mapCenter, setMapCenter ] = useState(null);
   const [ map, setMap ] = useState()
   const [ locations, setLocations ] = useState([]);
-
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-places-script',
-    googleMapsApiKey: "AIzaSyDue_S6t9ybh_NqaeOJDkr1KC9a2ycUYuE",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries
   })
 
