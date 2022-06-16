@@ -68,13 +68,28 @@ function App() {
     };
     service.textSearch(request, (results, status) => {
        if (status === "OK" && results) {
-        console.log('results', results)
         setLocations(results);
         // map is centered at first search result
         setMapCenter(results[0].geometry.location);
       }
-    });
+    })
+  }
 
+  const goToDetailsUrl = (placeId) => {
+    let request = {
+      placeId,
+      fields: ['url']
+    };
+    try {
+      service.getDetails(request, (place, status) => {
+        if (status === "OK" && place) {
+          const {url} = place;
+          if(url) window.open(url, '_blank');
+        }
+      })
+    } catch(err) {
+      console.error(err);
+    }
   }
 
   useEffect(() => {
@@ -203,16 +218,17 @@ function App() {
               </Modal>
               {/* Searches restaurant results by search term */}
               <Form.Label htmlFor="search-form" className="visually-hidden">Search for a restaurant</Form.Label>
-                <InputGroup>
-                    <Form.Control
-                      type="search"
-                      id="search-form"
-                      placeholder="Search for a restaurant"
-                      value={searchTerm}
-                      onChange={(e) => onSearch(e.target.value)}
-                    />
-                    <IoSearchSharp size="16px" color="#428815" />
-                </InputGroup>
+              <InputGroup  className="form-control search-input-group">
+                  <Form.Control
+                    className="no-borders"
+                    type="search"
+                    id="search-form"
+                    placeholder="Search for a restaurant"
+                    value={searchTerm}
+                    onChange={(e) => onSearch(e.target.value)}
+                  />
+                    <IoSearchSharp size="16px" color="#428815" className="search-icon" />
+              </InputGroup>
             </div> 
         </Col>
       </Row>
@@ -221,6 +237,7 @@ function App() {
           <div className={(displayScreen === 1) ? 'mobile-hide' : ''}>
             <RestaurantList
               locations={locations}
+              onItemClick={goToDetailsUrl}
               onItemHoverIn={updateSelected}
               onItemHoverOut={resetSelected}
             >
@@ -251,15 +268,16 @@ function App() {
                           visible={true}
                         >
                           {
-                      selected.geometry && (selected.place_id === item.place_id) &&
-                      (
-                        <InfoWindowF
-                          onCloseClick={resetSelected}
-                        >
-                          <ListItem item={selected}></ListItem>
-                        </InfoWindowF>
-                      )
-                  }
+                            selected.geometry && (selected.place_id === item.place_id) &&
+                            (
+                              <InfoWindowF
+                                onCloseClick={resetSelected}
+                                position={selected.geometry.location}
+                              >
+                                <ListItem item={selected} onClick={() => goToDetailsUrl(item.place_id)}></ListItem>
+                              </InfoWindowF>
+                            )
+                          } 
                           </Marker>
                       ))
                   }

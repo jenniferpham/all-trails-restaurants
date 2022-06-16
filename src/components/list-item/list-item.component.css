@@ -3,19 +3,12 @@
   min-height: 100px;
   display: flex;
   flex-direction: row;
-  /* border-radius: 10px;
-  border: 1px solid #e5e5e5;
-  margin-bottom: 10px; */
   padding: 10px;
   overflow: visible;
 }
 
 .star-rating {
   margin-top: -7px;
-}
-
-.favorites-container {
-  flex-grow: 1;
 }
 
 .restaurant-details-container {
@@ -54,4 +47,8 @@
   margin-right: 5px;
   color: #F2D447;
   vertical-align: middle;
+}
+
+.linkable {
+  cursor: pointer;
 }

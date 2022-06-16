@@ -117,3 +117,12 @@ body {
 .modal .form-check {
   text-align: left;
 }
+
+.no-borders {
+  border: none;
+}
+
+.search-input-group {
+  align-items: center;
+  padding: 0 8px;
+}

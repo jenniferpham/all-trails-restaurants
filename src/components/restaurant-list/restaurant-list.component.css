@@ -22,3 +22,7 @@
 .restaurant-list-border:hover {
   border: 2px solid #428815;
 }
+
+.favorites-container {
+  flex-grow: 1;
+}
