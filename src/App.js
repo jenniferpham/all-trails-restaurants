@@ -28,6 +28,8 @@ function App() {
   const [ service, setService ] = useState(null);
   
   const mapRef = useRef(null);
+  const sortAscRef = useRef(null);
+  const sortDescRef = useRef(null);
   const [ mapCenter, setMapCenter ] = useState(null);
   const [ map, setMap ] = useState()
   const [ locations, setLocations ] = useState([]);
@@ -61,10 +63,12 @@ function App() {
       location: currentPosition,
       radius: "2000", // meters
       type: 'restaurant', 
-      query
+      query,
+      fields: ['name', 'price_level', 'formatted_address', 'geometry', 'user_ratings_total', 'rating']
     };
     service.textSearch(request, (results, status) => {
        if (status === "OK" && results) {
+        console.log('results', results)
         setLocations(results);
         // map is centered at first search result
         setMapCenter(results[0].geometry.location);
@@ -134,17 +138,21 @@ function App() {
   }
 
   const onSortRating = (event) => {
+    const isDesc = event.target[0].checked;
+    const isAsc = event.target[1].checked;
     event.preventDefault();
-    const form = event;
-    console.log('form', form);
 
-    const val = "";
+    if(isAsc) {
+      setSortRatings("asc");
+    } else if (isDesc) {
+      setSortRatings("desc")
+    }
     
     setLocations((items) => {
-      if(val === 'asc') {
-        return items.sort((a, b) => a.rating - b.rating);
-      } else if(val === 'desc') {
+      if(isDesc) {
         return items.sort((a, b) => b.rating - a.rating);
+      } else if(isAsc) {
+        return items.sort((a, b) => a.rating - b.rating);
       } else {
         return items
       }
@@ -166,24 +174,28 @@ function App() {
               {/* Filter button displays modal that sorts the restaurants by rating */}
               <Button variant="outline-secondary"className="filter-btn" onClick={toggleModal}>Filter</Button>
               <Modal show={showModal} onHide={toggleModal} size="sm">
-                  <Form onSubmit={onSortRating}>
-                    <div key={`default-radio`} className="mb-3">
-                      <Form.Check 
-                        type="radio"
-                        id="ratings-high-low"
-                        label="Ratings high to low"
-                        name="sort-ratings"
-                        aria-label="sort ratings high to low"
-                      />
-                      <Form.Check
-                        type="radio"
-                        label="Ratings low to high"
-                        id="ratings-low-high"
-                        name="sort-ratings"
-                        aria-label="sort ratings low to high"
-                      />
-                    </div>
-                    <Button variant="primary" type="submit">
+                <Form onSubmit={onSortRating}>
+                  <div key={`default-radio`} className="mb-3">
+                    <Form.Check 
+                      type="radio"
+                      id="ratings-high-low"
+                      label="Ratings high to low"
+                      name="sort-ratings"
+                      aria-label="sort ratings high to low"
+                      ref={sortAscRef}
+                      value={sortRatings === 'desc'}
+                    />
+                    <Form.Check
+                      type="radio"
+                      label="Ratings low to high"
+                      id="ratings-low-high"
+                      name="sort-ratings"
+                      aria-label="sort ratings low to high"
+                      ref={sortDescRef}
+                      value={sortRatings === 'asc'}
+                    />
+                  </div>
+                  <Button variant="link" type="submit">
                     Apply
                   </Button>
                 </Form>

@@ -59,6 +59,9 @@ export function ListItem({item = {}, onHoverIn, onHoverOut, displayFavorite}) {
       onMouseLeave={() => {
         if(onHoverOut) onHoverOut();
       }}
+      onClick={() => {
+        // TODO: link to google places page
+      }}
     >
       <div className="image-container">
         <img src={image ? image.getUrl({maxWidth: 65, maxHeight: 65}) : DefaultHikingImage} alt={name} className="restaurant-image" />

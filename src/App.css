@@ -105,3 +105,15 @@ body {
   margin-right: 3px;
   color: #fff;
 }
+
+.modal .form-check-label {
+  font-size: 14px;
+}
+
+.modal-content {
+  padding: 15px;
+}
+
+.modal .form-check {
+  text-align: left;
+}

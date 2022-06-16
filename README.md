@@ -8,6 +8,8 @@
 - hover over map marker displays info window on the map
 - on mobile view, either list or map is hidden depending on which list or map button the user clicks on
 - number of stars correspond to user rating (rounded average rating to nearest 0.5)
+- sort ratings from high to low and from low to high with filter button in header
+- restaurant info links to google details page
 
 # Getting Started with Create React App
 
