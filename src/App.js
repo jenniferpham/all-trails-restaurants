@@ -210,9 +210,12 @@ function App() {
                       value={sortRatings === 'asc'}
                     />
                   </div>
-                  <Button variant="link" type="submit">
-                    Apply
-                  </Button>
+                  <div class="align-right">
+                    <Button variant="link" type="submit">
+                      Apply
+                    </Button>
+                  </div>
+                  
                 </Form>
                  
               </Modal>

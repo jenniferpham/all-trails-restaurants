@@ -126,3 +126,16 @@ body {
   align-items: center;
   padding: 0 8px;
 }
+
+.btn-link {
+  color: #428815;
+  display: block;
+}
+
+.btn-link:active, .btn-link:hover {
+  color: #30660d;
+}
+
+.align-right {
+  text-align: right;
+}
