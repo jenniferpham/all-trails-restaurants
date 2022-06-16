@@ -1,6 +1,6 @@
 # Features of project
 - gets user's location upon loading
-- finds restaurants near user's locations upon loading using Google Places API
+- finds restaurants near user's locations upon page load using Google Places API
 - search bar queries Google Places API based on user's location and radius
 - can save favorite restaurants (for that session)
 - responsive view on desktop vs mobile
