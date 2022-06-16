@@ -4,10 +4,10 @@
 - search bar queries Google Places API based on user's location and radius
 - can save favorite restaurants (for that session)
 - responsive view on desktop vs mobile
-- hover over the restaurant list item on left changes the map to center to that position and open that specific map info window
+- hover over the restaurant list item on left changes the map to center to that position and open that specific info window
 - hover over map marker displays info window on the map
-- on mobile view, either list or map is hidden depending on which view user is on
-- number of stars correspond to user rating (rounded by nearest 0.5)
+- on mobile view, either list or map is hidden depending on which list or map button the user clicks on
+- number of stars correspond to user rating (rounded average rating to nearest 0.5)
 
 # Getting Started with Create React App
 

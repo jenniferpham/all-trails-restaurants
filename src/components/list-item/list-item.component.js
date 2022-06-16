@@ -45,7 +45,7 @@ export function ListItem({item = {}, onHoverIn, onHoverOut, displayFavorite}) {
             return (<IoStarOutline key={`outline-star${index}`} size={starSize} className="icon-spacing" />)
           }
         })}
-        <span className="restaurant-details">rat {rating}, round {roundedRating} ({numReviews.toString()})</span>
+        <span className="restaurant-details">({numReviews.toString()})</span>
       </div>
     );
   };

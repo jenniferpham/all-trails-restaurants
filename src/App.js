@@ -66,8 +66,7 @@ function App() {
     service.textSearch(request, (results, status) => {
        if (status === "OK" && results) {
         setLocations(results);
-        console.log('result[0]', results[0])
-        // map is centered at first result
+        // map is centered at first search result
         setMapCenter(results[0].geometry.location);
       }
     });
@@ -79,18 +78,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // initialize map
-    if (mapRef.current && !map) {
-      setMap(new window.google.maps.Map(mapRef.current, {}));
+    // initialize map and service
+    if (isLoaded && mapRef.current && !map) {
+      const m = new window.google.maps.Map(mapRef.current, {});
+      setMap(m);
+      if(!service) setService(new window.google.maps.places.PlacesService(m));
     }
-  }, [mapRef, map]);
-
-  useEffect(() => {
-    // initialize service
-    if (map) {
-      if(!service) setService(new window.google.maps.places.PlacesService(map));
-    }
-  }, [map]);
+  }, [mapRef, map, isLoaded]);
 
   useEffect(() => {
     if(currentPosition && service) {
@@ -106,9 +100,7 @@ function App() {
     };
   }, [])
 
-
   const toggleModal = () => setShowModal(!showModal);
-
 
   const onSearch = (term) =>  {
     setSearchTerm(term);
@@ -116,22 +108,21 @@ function App() {
 
   useEffect(() => {
     if(!service) return;
-    // debounce so query is sent after some time (.6s)
+    // debounce so query is sent after some time (.6s) (reduces requests that are not intentional searches)
     const delayDebounceFn = setTimeout(() => {
       getRestaurantsByQuery(currentPosition, service, searchTerm)
     }, 600)
     return () => clearTimeout(delayDebounceFn)
   }, [searchTerm])
 
-  // ability to change screens on mobile only
+  // toggle between map screen and list screen
+  // ability to change screens on mobile only using buttons
   const onToggleScreen = () => {
     const newScreen = displayScreen === 0 ? 1 : 0;
     setDisplayScreen(newScreen);
   }
 
   const updateSelected = (restaurant) => {
-
-    console.log('update selected restaurant', restaurant);
     setSelected(restaurant);
     if(restaurant) {
       setMapCenter(restaurant.geometry.location);
@@ -160,6 +151,7 @@ function App() {
     })
     toggleModal();
   }
+
   return (
     <Container fluid className="app-container">
       <Row className="search-header">
@@ -171,7 +163,7 @@ function App() {
         </Col>
         <Col xs={12} md={6}>
           <div className="search-filter-container">
-              {/* TODO: Button filters */}
+              {/* Filter button displays modal that sorts the restaurants by rating */}
               <Button variant="outline-secondary"className="filter-btn" onClick={toggleModal}>Filter</Button>
               <Modal show={showModal} onHide={toggleModal} size="sm">
                   <Form onSubmit={onSortRating}>
@@ -183,7 +175,6 @@ function App() {
                         name="sort-ratings"
                         aria-label="sort ratings high to low"
                       />
-
                       <Form.Check
                         type="radio"
                         label="Ratings low to high"
@@ -198,10 +189,9 @@ function App() {
                 </Form>
                  
               </Modal>
-              {/* TODO: Icon in search bar */}
+              {/* Searches restaurant results by search term */}
               <Form.Label htmlFor="search-form" className="visually-hidden">Search for a restaurant</Form.Label>
                 <InputGroup>
-
                     <Form.Control
                       type="search"
                       id="search-form"
@@ -216,7 +206,7 @@ function App() {
       </Row>
       <Row>
         <Col xs={12} md={6} lg={4} className="px-0">
-          <div  className={(displayScreen === 1) ? 'mobile-hide' : ''}>
+          <div className={(displayScreen === 1) ? 'mobile-hide' : ''}>
             <RestaurantList
               locations={locations}
               onItemHoverIn={updateSelected}
@@ -226,8 +216,8 @@ function App() {
           </div>
         </Col>
         <Col xs={12} md={6} lg={8} className="px-0">
-          {isLoaded && 
-            <div className={`map-container ${(displayScreen === 0) ? 'mobile-hide' : ''}`}>
+          <div className={`map-container ${(displayScreen === 0) ? 'mobile-hide' : ''}`}>
+            {isLoaded && 
               <GoogleMap
                 mapContainerStyle={mapStyles}
                 zoom={13}
@@ -235,8 +225,7 @@ function App() {
                 ref={mapRef}
               >
                   {  
-                    locations.map((item) => {
-                      return (
+                    locations.map((item) => (
                         <Marker 
                           key={item.place_id} 
                           position={{
@@ -248,29 +237,30 @@ function App() {
                           }}
                           clickable={true}
                           visible={true}
-                        />
-                      )
-                    })
-                  }
-                  {
-                      selected.geometry && 
+                        >
+                          {
+                      selected.geometry && (selected.place_id === item.place_id) &&
                       (
                         <InfoWindowF
-                          position={{
-                            lat: selected.geometry.location.lat(),
-                            lng: selected.geometry.location.lng()
-                          }}
                           onCloseClick={resetSelected}
                         >
                           <ListItem item={selected}></ListItem>
                         </InfoWindowF>
                       )
                   }
+                          </Marker>
+                      ))
+                  }
               </GoogleMap>
+            }
+            { loadError && (
+              <p>Yikes! Looks like we're having technical difficulties loading the map. Please forgive us!</p>
+            )}
           </div>
-          } 
-          </Col>
+        </Col>
       </Row>
+
+      {/* Map and List buttons only displayed on mobile to toggle back and forth between map and list in small width devices */}
       {displayScreen === 0 ? (
         <Button
           className="mobile-button d-sm-none" 
