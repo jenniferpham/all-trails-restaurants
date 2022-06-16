@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, InputGroup } from 'react-bootstrap';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow, InfoWindowF } from '@react-google-maps/api';
 import { IoSearchSharp, IoListOutline, IoLocationOutline } from "react-icons/io5";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -26,7 +26,7 @@ function App() {
   const [ selected, setSelected ] = useState({});
   const [ currentPosition, setCurrentPosition ] = useState(null);
   const [ service, setService ] = useState(null);
-  const [ infoWindow, setInfoWindow ] = useState(null);
+  
   const mapRef = useRef(null);
   const [ mapCenter, setMapCenter ] = useState(null);
   const [ map, setMap ] = useState()
@@ -79,18 +79,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // initialize map, service, infoWindow
+    // initialize map
     if (mapRef.current && !map) {
       setMap(new window.google.maps.Map(mapRef.current, {}));
     }
   }, [mapRef, map]);
 
   useEffect(() => {
-    // initialize service, infoWindow
+    // initialize service
     if (map) {
-      console.log('initialize infowindow')
       if(!service) setService(new window.google.maps.places.PlacesService(map));
-      if(!infoWindow) setInfoWindow(new window.google.maps.InfoWindow());
     }
   }, [map]);
 
@@ -101,11 +99,10 @@ function App() {
   }, [currentPosition, service])
 
   useEffect(() => {
-    // set map, service, infoWindow to null on unmount
+    // set map and service to null on unmount
     return () => {
       setMap(null);
       setService(null);
-      setInfoWindow(null);
     };
   }, [])
 
@@ -133,27 +130,13 @@ function App() {
   }
 
   const updateSelected = (restaurant) => {
-    if(infoWindow) {
-      infoWindow.close();
-    }
+
     console.log('update selected restaurant', restaurant);
     setSelected(restaurant);
     if(restaurant) {
       setMapCenter(restaurant.geometry.location);
     }
-
-    setInfoWindow(new window.google.maps.InfoWindow({
-      position:restaurant.geometry.location,
-      content: restaurant.name
-  }));
   }
-
-  useEffect(() => {
-if(infoWindow && map) {
-  infoWindow.open(mapRef.current);
-
-}
-  }, [infoWindow])
 
   const resetSelected = () => {
     setSelected({});
@@ -178,7 +161,7 @@ if(infoWindow && map) {
     toggleModal();
   }
   return (
-    <Container className="app-container">
+    <Container fluid className="app-container">
       <Row className="search-header">
         <Col xs={12} md={6}>
           <div className="site-info">
@@ -216,23 +199,23 @@ if(infoWindow && map) {
                  
               </Modal>
               {/* TODO: Icon in search bar */}
-                      <Form.Label htmlFor="search-form" className="visually-hidden">Search for a restaurant</Form.Label>
-                        <InputGroup>
+              <Form.Label htmlFor="search-form" className="visually-hidden">Search for a restaurant</Form.Label>
+                <InputGroup>
 
-                            <Form.Control
-                              type="search"
-                              id="search-form"
-                              placeholder="Search for a restaurant"
-                              value={searchTerm}
-                              onChange={(e) => onSearch(e.target.value)}
-                            />
-                            <IoSearchSharp size="16px" color="#428815" />
-                        </InputGroup>
+                    <Form.Control
+                      type="search"
+                      id="search-form"
+                      placeholder="Search for a restaurant"
+                      value={searchTerm}
+                      onChange={(e) => onSearch(e.target.value)}
+                    />
+                    <IoSearchSharp size="16px" color="#428815" />
+                </InputGroup>
             </div> 
         </Col>
       </Row>
       <Row>
-        <Col xs={12} lg={4} className="px-0">
+        <Col xs={12} md={6} lg={4} className="px-0">
           <div  className={(displayScreen === 1) ? 'mobile-hide' : ''}>
             <RestaurantList
               locations={locations}
@@ -242,7 +225,7 @@ if(infoWindow && map) {
           </RestaurantList>
           </div>
         </Col>
-        <Col xs={12} lg={8} className="px-0">
+        <Col xs={12} md={6} lg={8} className="px-0">
           {isLoaded && 
             <div className={`map-container ${(displayScreen === 0) ? 'mobile-hide' : ''}`}>
               <GoogleMap
@@ -263,7 +246,6 @@ if(infoWindow && map) {
                           onMouseOver={() => {
                             setSelected(item);
                           }}
-                          // onMouseOut={resetSelected}
                           clickable={true}
                           visible={true}
                         />
@@ -273,7 +255,7 @@ if(infoWindow && map) {
                   {
                       selected.geometry && 
                       (
-                        <InfoWindow
+                        <InfoWindowF
                           position={{
                             lat: selected.geometry.location.lat(),
                             lng: selected.geometry.location.lng()
@@ -281,7 +263,7 @@ if(infoWindow && map) {
                           onCloseClick={resetSelected}
                         >
                           <ListItem item={selected}></ListItem>
-                        </InfoWindow>
+                        </InfoWindowF>
                       )
                   }
               </GoogleMap>
@@ -293,20 +275,19 @@ if(infoWindow && map) {
         <Button
           className="mobile-button d-sm-none" 
           onClick={() => onToggleScreen()}>
-            <IoListOutline className="button-icon" size="20px"  />
+            <IoLocationOutline className="button-icon" size="20px" />
             Map
           </Button>
       ) : (
         <Button
           className="mobile-button d-sm-none "
           onClick={() => onToggleScreen()}>
-          <IoLocationOutline className="button-icon" size="20px" />
-        List</Button>
+            <IoListOutline className="button-icon" size="20px"  />
+            List
+        </Button>
       )}
       
-      
     </Container>
- 
   );
 }
 

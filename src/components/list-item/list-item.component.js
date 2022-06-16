@@ -1,5 +1,5 @@
 import './list-item.component.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IoStarOutline, IoStar, IoHeartSharp, IoHeartOutline } from "react-icons/io5";
 import DefaultHikingImage from "../../assets/martis-trail.jpg";
 
@@ -10,10 +10,6 @@ export function ListItem({item = {}, onHoverIn, onHoverOut, displayFavorite}) {
   const [favorite, setFavorite] = useState(false);
   const {name, rating, photos, user_ratings_total: numReviews, formatted_address: description, geometry, price_level: priceLevel} = item;
   const image = photos ? photos[0] : null;
-  const position = {
-    lat: geometry.location.lat(),
-    lng: geometry.location.lng()
-  }
 
   const onHeartToggle = () => {
     setFavorite((prevFavState) => !prevFavState);

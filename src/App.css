@@ -58,6 +58,13 @@ body {
   justify-content: flex-end;
   display: flex;
   flex-direction: row;
+  margin-top: 10px;
+}
+
+@media screen and (min-width: 768px) {
+  .search-filter-container {
+    margin-top: 0;
+  }
 }
 
 .site-info {
