@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Row, Col, InputGroup } from 'react-bootstrap';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow, InfoWindowF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindowF } from '@react-google-maps/api';
 import { IoSearchSharp, IoListOutline, IoLocationOutline } from "react-icons/io5";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
